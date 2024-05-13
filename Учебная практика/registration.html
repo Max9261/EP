@@ -1,0 +1,122 @@
+<?php
+$dbc = mysqli_connect('localhost', 'root', '', 'user');
+if(!isset($_COOKIE['id'])) {
+	if(isset($_POST['submit'])) {
+		$user_username = mysqli_real_escape_string($dbc, trim($_POST['username']));
+		$user_password = mysqli_real_escape_string($dbc, trim($_POST['password']));
+		if(!empty($user_username) && !empty($user_password)) {
+			$query = "SELECT `user_id` , `username` FROM `users` WHERE username = '$user_username' AND password = SHA('$user_password')";
+			$data = mysqli_query($dbc,$query);
+			if(mysqli_num_rows($data) == 1) {
+				$row = mysqli_fetch_assoc($data);
+				setcookie('user_id', $row['user_id'], time() + (60*60*24*30));
+				setcookie('username', $row['username'], time() + (60*60*24*30));
+				// $home_url = 'http://' . $_SERVER['HTTP_HOST'];
+				$home_url = 'index.php';
+				header('Location: '. $home_url);
+			}
+			else {
+				echo 'Извините, вы должны ввести правильные имя пользователя и пароль';
+			}
+		}
+		else {
+			echo 'Извините вы должны заполнить поля правильно';
+		}
+	}
+}
+?>
+
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="CSS/registration.css" />
+    <link rel="stylesheet" href="CSS/normalize.css" />
+    <title>Stone & Style Co.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metamorphous&family=Michroma&family=News+Cycle:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metamorphous&family=Michroma&family=News+Cycle:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <section class="forms-section">
+        <h1 class="section-title">Stone & Style</h1>
+        <div class="forms">
+            <div class="form-wrapper is-active">
+                <button type="button" class="switcher switcher-login">
+                    Войти
+                    <span class="underline"></span>
+                </button>
+                <form class="form form-login">
+                    <fieldset>
+                        <legend>Пожалуйста, введите свой адрес электронной почты и пароль для входа в систему.</legend>
+                        <div class="input-block">
+                            <label for="login-email">Имя пользователя</label>
+                            <input id="login-email" type="txt" required>
+                        </div>
+                        <div class="input-block">
+                            <label for="login-password">Пароль</label>
+                            <input id="login-password" type="password" required>
+                        </div>
+                    </fieldset>
+                    <button type="submit" class="btn-login">Войти</button>
+                </form>
+            </div>
+            <div class="form-wrapper">
+                <button type="button" class="switcher switcher-signup">
+                    Зарегистрироваться
+                    <span class="underline"></span>
+                </button>
+
+
+
+                <form class="form form-signup" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                    <fieldset>
+                        <legend>Пожалуйста, введите свой адрес электронной почты, пароль и подтверждение пароля для
+                            регистрации.</legend>
+                        <div class="input-block">
+                            <label for="signup-email">E-mail</label>
+                            <input id="signup-email" type="email" required>
+                        </div>
+                        <div class="input-block">
+                            <label for="signup-password">Пароль</label>
+                            <input id="signup-password" type="password" required>
+                        </div>
+                        <div class="input-block">
+                            <label for="signup-password-confirm">Повторите пароль</label>
+                            <input id="signup-password-confirm" type="password" required>
+                        </div>
+                    </fieldset>
+                    <button type="submit" name="submit" class="btn-signup">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+
+
+
+
+        <script>
+            const switchers = [...document.querySelectorAll('.switcher')]
+
+            switchers.forEach(item => {
+                item.addEventListener('click', function () {
+                    switchers.forEach(item => item.parentElement.classList.remove('is-active'))
+                    this.parentElement.classList.add('is-active')
+                })
+            })</script>
+    </section>
+
+
+</body>
+
+</html>
